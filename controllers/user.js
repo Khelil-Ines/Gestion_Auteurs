@@ -130,4 +130,26 @@ const addPublication = (req, res) => {
         });
       });
   };
+
+  const getTaskById = (req, res) => {
+  Task.findOne({ _id: req.params.id })
+    .then((task) => {
+      if (!task) {
+        res.status(404).json({
+          message: "objet non trouvé!",
+        });
+      } else {
+        res.status(200).json({
+          model: task,
+          message: "objet trouvé!",
+        });
+      }
+    })
+    .catch(() => {
+      res.status(400).json({
+        error: Error.message,
+        message: "Données invalides!",
+      });
+    });
+};
   module.exports = { add_admin, register, signin, validerauteur, addPublication };
