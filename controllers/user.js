@@ -9,18 +9,17 @@ const add_admin = (req, res) => {
         const admin = new User({
           firstname: req.body.firstname,
           lastname: req.body.lastname,
+          phone_num : req.body.phone_num,
           login : req.body.login,
           password: hash,
           role: role,
           statut: statut,
         });
-        user
+        admin
           .save()
           .then((response) => {
-            const newUser = response.toObject();
-            delete newUser.password;
             res.status(201).json({
-              user: newUser,
+              user: admin,
               message: "Admin créé !",
             });
           })
@@ -68,7 +67,7 @@ const register = (req, res, next) => {
           .then((valid) => {
             if (!valid) {
               return res.status(401).json({
-                error: "login ou mot de passe incorrecte !",
+                error: "Mot de passe incorrecte !",
               });
             }
             res.status(200).json({
@@ -113,8 +112,7 @@ const register = (req, res, next) => {
 }
 
 const addPublication = (req, res) => {
-    console.log(req.body);
-    const book = new Book(req.body);
+    const pub = new Publication(req.body);
     book
       .save()
       .then(() => {

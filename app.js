@@ -1,8 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
-//const taskRouter = require("./routes/task");
-//const userRouter = require("./routes/user");
+const userRouter = require("./routes/user");
 
 app.use(express.json());
 
@@ -27,7 +26,6 @@ mongoose
   })
   .then(() => console.log("connexion a MongoDB reussie!"))
   .catch((e) => console.log("connexion a MongoDB échouée!", e));
-//app.use("/api/auth/tasks", taskRouter);
-//app.use("/api/auth", userRouter);
+app.use("/auth/user", userRouter);
 
 module.exports = app;

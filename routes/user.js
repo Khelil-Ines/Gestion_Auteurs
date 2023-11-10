@@ -7,7 +7,7 @@ const authMiddleware = require("../middlewares/auth")
 router.post("/add-admin",userController.add_admin); 
 router.post("/register",userController.register);
 router.post("/signin",userController.signin);  
-router.patch(
+router.post(
     "/validerauteur/:id",
     authMiddleware.loggedMiddleware,
     authMiddleware.isAdmin,
