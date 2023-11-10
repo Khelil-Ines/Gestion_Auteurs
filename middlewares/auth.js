@@ -40,3 +40,5 @@ module.exports.isAdmin = (req, res, next) => {
     req.status(401).json({ error: error.message });
   }
 };
+
+module.exports.accespublication = (req, res, next) => {}
