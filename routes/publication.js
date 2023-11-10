@@ -11,3 +11,5 @@ router.post(
      authMiddleware.isAdmin,
     userController.addPublication
   );
+
+  module.exports = router;
