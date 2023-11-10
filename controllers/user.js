@@ -38,7 +38,7 @@ const register = (req, res, next) => {
     const { lastname, firstname, phone_num, login } = req.body;
     const statut = "EA"
     const password = phone_num;
-    const user = new User({ lastname, firstname, phone_num, login, password, statut });
+    const user = new User({ lastname, firstname, phone_num, login, statut });
     user
       .save()
       .then((response) => {
@@ -83,14 +83,14 @@ const register = (req, res, next) => {
 
   const validerauteur= (req, res, next) => {
     const statut = "V";
-    User.findOne({ _id: userId })
+    User.findOne({ _id: req.params.id })
     .then((user) => {
       if (!user) {
         return res
           .status(401)
           .json({ message: "User not found ! " });
       } else {
-        bcrypt.hash(user.phone_num, 10).then((hash) => {
+        bcrypt.hash(req.body.password, 10).then((hash) => {
             req.user = {
                 firstname: user.firstname,
               lastname: user.lastname,
@@ -100,10 +100,11 @@ const register = (req, res, next) => {
               role: user.role,
               statut: statut,
               };
-              
             });
-       
-        next();
+            res.status(200).json({
+                model: user,
+                message: "User updated!",
+              });
       }
     })
     .catch((error) => {
