@@ -9,9 +9,16 @@ router.post("/register",userController.register);
 router.post("/signin",userController.signin);  
 router.patch(
     "/validerauteur/:id",
-    // authMiddleware.loggedMiddleware,
-    // authMiddleware.isAdmin,
+     authMiddleware.loggedMiddleware,
+     authMiddleware.isAdmin,
     userController.validerauteur
+  );
+
+  router.post(
+    "/ajouter_pub/",
+     authMiddleware.loggedMiddleware,
+     authMiddleware.isAdmin,
+    userController.addPublication
   );
 
 module.exports = router;

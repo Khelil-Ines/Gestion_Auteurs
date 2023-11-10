@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const publication = require("../models/publication");
 
 const add_admin = (req, res) => {
     const role = "admin";
@@ -114,19 +115,19 @@ const register = (req, res, next) => {
 
 const addPublication = (req, res) => {
     const pub = new Publication(req.body);
-    book
+    pub
       .save()
       .then(() => {
         res.status(201).json({
-          model: book,
-          message: "object créé ",
+          model: pub,
+          message: "publication créé ",
         });
       })
       .catch((error) => {
         res.status(400).json({
           error: error.message,
-          message: "erreur d'extraction ",
+          message: "erreur ",
         });
       });
   };
-  module.exports = { add_admin, register, signin, validerauteur };
+  module.exports = { add_admin, register, signin, validerauteur, addPublication };
