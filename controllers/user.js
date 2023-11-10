@@ -6,8 +6,8 @@ const add_admin = (req, res) => {
     const role = "admin";
     const statut = "V";
     bcrypt.hash(req.body.password, 10).then((hash) => {
-        const user = new User({
-          firstname: req.body.email,
+        const admin = new User({
+          firstname: req.body.firstname,
           lastname: req.body.lastname,
           login : req.body.login,
           password: hash,
@@ -21,7 +21,7 @@ const add_admin = (req, res) => {
             delete newUser.password;
             res.status(201).json({
               user: newUser,
-              message: "Utilisateur créé !",
+              message: "Admin créé !",
             });
           })
           .catch((error) => {
@@ -35,22 +35,16 @@ const add_admin = (req, res) => {
 
 
 
-const signup = (req, res, next) => {
-  bcrypt.hash(req.body.password, 10).then((hash) => {
-    const user = new User({
-      email: req.body.email,
-      password: hash,
-      lastName : req.body.lastName,
-      firstName : req.body.firstName,
-      role: req.body.role,
-    });
+const register = (req, res, next) => {
+    const { lastname, firstname, phone_num, login } = req.body;
+    const statut = "EA"
+    const password = phone_num;
+    const user = new User({ lastname, firstname, phone_num, login, password, statut });
     user
       .save()
       .then((response) => {
-        const newUser = response.toObject();
-        delete newUser.password;
         res.status(201).json({
-          user: newUser,
+          models: user,
           message: "Utilisateur créé !",
         });
       })
@@ -59,7 +53,81 @@ const signup = (req, res, next) => {
           .status(400)
           .json({ error: error.message, message: "Données invalides" });
       });
-  });
-};
+  };
 
-  module.exports = { add_admin, signup };
+  const signin = (req, res, next) => {
+    User.findOne({ login: req.body.login })
+      .then((user) => {
+        if (!user) {
+          return res.status(401).json({
+            error: "User not found",
+          });
+        }
+        bcrypt
+          .compare(req.body.password, user.password)
+          .then((valid) => {
+            if (!valid) {
+              return res.status(401).json({
+                error: "login ou mot de passe incorrecte !",
+              });
+            }
+            res.status(200).json({
+              token: jwt.sign({ id: user._id }, "RANDOM_TOKEN_SECRET", {
+                expiresIn: "24h",
+              }),
+            });
+          })
+          .catch((error) => res.status(500).json({ error: error.message }));
+      })
+      .catch((error) => res.status(500).json({ error: error.message }));
+  };
+
+  const validerauteur= (req, res, next) => {
+    const statut = "V";
+    User.findOne({ _id: userId })
+    .then((user) => {
+      if (!user) {
+        return res
+          .status(401)
+          .json({ message: "User not found ! " });
+      } else {
+        bcrypt.hash(user.phone_num, 10).then((hash) => {
+            req.user = {
+                firstname: user.firstname,
+              lastname: user.lastname,
+              phone_num : user.phone_num,
+              login : user.login,
+              password: hash,
+              role: user.role,
+              statut: statut,
+              };
+              
+            });
+       
+        next();
+      }
+    })
+    .catch((error) => {
+      res.status(500).json({ error: error.message });
+    });
+}
+
+const addPublication = (req, res) => {
+    console.log(req.body);
+    const book = new Book(req.body);
+    book
+      .save()
+      .then(() => {
+        res.status(201).json({
+          model: book,
+          message: "object créé ",
+        });
+      })
+      .catch((error) => {
+        res.status(400).json({
+          error: error.message,
+          message: "erreur d'extraction ",
+        });
+      });
+  };
+  module.exports = { add_admin, register, signin, validerauteur };
